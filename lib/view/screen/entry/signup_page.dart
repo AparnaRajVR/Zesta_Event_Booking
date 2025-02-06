@@ -9,7 +9,7 @@ import 'package:z_organizer/view/widget/divider_widget.dart';
 import 'package:z_organizer/view/widget/google_signin.dart';
 import 'package:z_organizer/view/widget/logo_widget.dart';
 import 'package:z_organizer/view/widget/terms_condition.dart';
-import '../../../VIewmodel/signup_viewmodel.dart';
+import 'package:z_organizer/viewmodel/signup_viewmodel.dart';
 
 class SignupPage extends ConsumerStatefulWidget {
   const SignupPage({super.key});
@@ -33,7 +33,7 @@ class SignupPageState extends ConsumerState<SignupPage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background Gradient
+          
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -44,7 +44,7 @@ class SignupPageState extends ConsumerState<SignupPage> {
             ),
           ),
 
-          // Main frosted glass container
+          // Main  glass container
           Center(
             child: SingleChildScrollView(
               child: Padding(
@@ -184,7 +184,9 @@ class SignupPageState extends ConsumerState<SignupPage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text("SignUp successful")),
               );
-              Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterScreen(
+               
+              )));
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(result)),

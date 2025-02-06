@@ -12,7 +12,7 @@ class OnboardingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final pages = viewModel.getPages(); // Fetch data via ViewModel
+    final pages = viewModel.getPages(); 
 
     return Scaffold(
       body: IntroductionScreen(

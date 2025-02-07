@@ -1,23 +1,29 @@
 
+
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // ✅ Firestore for user data storage
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+/// Authentication Repository
 class AuthRepository {
   final FirebaseAuth _firebaseAuth;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance; // ✅ Firestore instance
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance; 
 
   AuthRepository(this._firebaseAuth);
 
+  // Listen for Authentication State Changes
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
-  // ✅ **Sign In with Email & Password**
+ 
+
+
+  /// Sign In with Email and Password
   Future<void> signInWithEmailAndPassword(String email, String password) async {
     await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
   }
 
-  // ✅ **Sign Up New User & Save Data to Firestore**
+  /// Create a New User with Email, Password, and Full Name
   Future<void> createUserWithEmailAndPassword(String email, String password, String fullName) async {
     final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
     await userCredential.user?.sendEmailVerification();
@@ -31,14 +37,18 @@ class AuthRepository {
     });
   }
 
-  // ✅ **Check if Email is Verified**
+  // -----------------------------------------------------------------------
+  // Email Verification
+  // -----------------------------------------------------------------------
+
+  /// Check if Email is Verified
   Future<bool> isEmailVerified() async {
     final user = _firebaseAuth.currentUser;
-    await user?.reload(); // Refresh user info
+    await user?.reload();
     return user?.emailVerified ?? false;
   }
 
-  // ✅ **Send Verification Email**
+  /// Send Email Verification
   Future<void> sendVerificationEmail() async {
     final user = _firebaseAuth.currentUser;
     if (user != null && !user.emailVerified) {
@@ -46,12 +56,11 @@ class AuthRepository {
     }
   }
 
-  // ✅ **Sign Out**
-  Future<void> signOut() async {
-    await _firebaseAuth.signOut();
-  }
+  // -----------------------------------------------------------------------
+  // Google Sign-In
+  // -----------------------------------------------------------------------
 
-  // ✅ **Google Sign-In**
+  /// Sign In with Google Account
   Future<void> signInWithGoogle() async {
     final googleUser = await GoogleSignIn().signIn();
     if (googleUser == null) throw Exception("Google Sign-In aborted");
@@ -64,7 +73,7 @@ class AuthRepository {
 
     UserCredential userCredential = await _firebaseAuth.signInWithCredential(credential);
 
-    // Store user data in Firestore if it's a new user
+    // Save user details in Firestore if the user is signing in for the first time
     final userDoc = await _firestore.collection("users").doc(userCredential.user!.uid).get();
     if (!userDoc.exists) {
       await _firestore.collection("users").doc(userCredential.user!.uid).set({
@@ -76,7 +85,11 @@ class AuthRepository {
     }
   }
 
-  // ✅ **Get Current User Details from Firestore**
+  // -----------------------------------------------------------------------
+  // User Data Management
+  // -----------------------------------------------------------------------
+
+  /// Get User Details from Firestore
   Future<Map<String, dynamic>?> getUserDetails() async {
     final user = _firebaseAuth.currentUser;
     if (user == null) return null;
@@ -84,14 +97,25 @@ class AuthRepository {
     final doc = await _firestore.collection("users").doc(user.uid).get();
     return doc.exists ? doc.data() as Map<String, dynamic> : null;
   }
+
+  // -----------------------------------------------------------------------
+  // Sign Out
+  // -----------------------------------------------------------------------
+
+  /// Sign Out the Current User
+  Future<void> signOut() async {
+    await _firebaseAuth.signOut();
+  }
 }
 
-// ✅ **Riverpod Provider for Authentication**
+/// Riverpod Providers
+/// -----------------------------------------------------------------------
+/// Provides an instance of AuthRepository
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepository(FirebaseAuth.instance);
 });
 
-// ✅ **Riverpod Provider to Stream Auth State**
+/// Provides Authentication State as a Stream
 final authStateProvider = StreamProvider<User?>((ref) {
   final authRepository = ref.watch(authRepositoryProvider);
   return authRepository.authStateChanges;

@@ -19,16 +19,3 @@ final authServicesProvider = Provider<AuthServices>((ref) {
 final authStateProvider = StreamProvider<User?>((ref) {
   return ref.watch(authServicesProvider).authStateChange;
 });
-
-
-// // **New Provider for Email Verification Status**
-// final emailVerifiedProvider = FutureProvider<bool>((ref) async {  // **New provider added**
-//   final authServices = ref.watch(authServicesProvider);
-//   return await authServices.isEmailVerified();
-// });
-
-// // **New Provider to Trigger Send Verification Email**
-// final sendVerificationProvider = Provider<void>((ref) {  // **New provider added**
-//   final authServices = ref.watch(authServicesProvider);
-//   authServices.sendVerificationEmail();  // Trigger email verification send
-// });

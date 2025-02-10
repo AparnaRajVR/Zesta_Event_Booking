@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glassmorphism/glassmorphism.dart';
-import 'package:z_organizer/authentication/repository/auth_repository.dart';
 import 'package:z_organizer/constant/color.dart';
+import 'package:z_organizer/providers/auth_providers.dart';
 import 'package:z_organizer/view/widget/custom_appbar.dart';
 import 'package:z_organizer/view/widget/register_form.dart';
 
@@ -12,7 +12,7 @@ class RegisterScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authRepository = ref.watch(authRepositoryProvider);
+    final authRepository = ref.watch(authServiceProvider);
     
     return Scaffold(
       appBar: CustomAppBar(title: 'Register Account'),

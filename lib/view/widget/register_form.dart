@@ -1,9 +1,11 @@
 
-
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:z_organizer/constant/color.dart';
+import 'package:z_organizer/view/screen/entry/verification_status.dart';
 import 'package:z_organizer/view/widget/custom_feild.dart';
 import 'package:z_organizer/view/widget/image_picker.dart';
 import 'package:z_organizer/view/widget/validation_widget.dart';
@@ -60,6 +62,69 @@ class _RegisterFormWidgetState extends ConsumerState<RegisterFormWidget> {
     }
   }
 
+  Future<void> _registerUser(BuildContext context) async {
+  if (_formKey.currentState!.validate()) {
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      // Get the current user's UID
+      final currentUser = FirebaseAuth.instance.currentUser;
+
+      if (currentUser != null) {
+        final userRef = FirebaseFirestore.instance
+            .collection('users')
+            .doc(currentUser.uid)
+            .collection('userdetails');
+
+        // Upload image if selected
+        String? imageUrl;
+        if (selectedImage != null) {
+          imageUrl = await ref.read(imageUploadProvider.notifier).uploadImage(selectedImage!);
+        }
+
+        // Firestore operation to save user details in subcollection
+        await userRef.add({
+          'fullName': nameController.text,
+          'email': emailController.text,
+          'phone': phoneController.text,
+          'address': addressController.text,
+          'organizationName': orgNameController.text,
+          'organizerType': selectedOrganizerType,
+          'profileImage': imageUrl,
+        });
+
+        // Close loading indicator
+        Navigator.of(context).pop();
+
+        // Navigate to success page
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SuccessPage()),
+        );
+      } else {
+        throw Exception('User not logged in');
+      }
+    } catch (e) {
+      // Close loading indicator
+      Navigator.of(context).pop();
+
+      // Show error SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Registration failed: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+}
+
+
   @override
   Widget build(BuildContext context) {
     final imageUploadState = ref.watch(imageUploadProvider);
@@ -91,27 +156,24 @@ class _RegisterFormWidgetState extends ConsumerState<RegisterFormWidget> {
               validator: ValidationHelper.validatePhone,
             ),
             const SizedBox(height: 16.0),
-            
-
-CustomTextFormField(
-  isDropdown: true,
-  label: 'Organizer Type',
-  hint: 'Select organizer type',
-  dropdownItems: const [
-    DropdownMenuItem(value: 'Institute', child: Text('Institute')),
-    DropdownMenuItem(value: 'Club', child: Text('Club')),
-    DropdownMenuItem(value: 'Others', child: Text('Others')),
-  ],
-  selectedValue: selectedOrganizerType,
-  onChanged: (value) {
-    setState(() {
-      selectedOrganizerType = value;
-    });
-  },
-  validator: (value) =>
-      value == null || value.isEmpty ? 'Please select an organizer type' : null,
-),
-
+            CustomTextFormField(
+              isDropdown: true,
+              label: 'Organizer Type',
+              hint: 'Select organizer type',
+              dropdownItems: const [
+                DropdownMenuItem(value: 'Institute', child: Text('Institute')),
+                DropdownMenuItem(value: 'Club', child: Text('Club')),
+                DropdownMenuItem(value: 'Others', child: Text('Others')),
+              ],
+              selectedValue: selectedOrganizerType,
+              onChanged: (value) {
+                setState(() {
+                  selectedOrganizerType = value;
+                });
+              },
+              validator: (value) =>
+                  value == null || value.isEmpty ? 'Please select an organizer type' : null,
+            ),
             const SizedBox(height: 16.0),
             CustomTextFormField(
               controller: orgNameController,
@@ -127,17 +189,18 @@ CustomTextFormField(
               validator: ValidationHelper.validateName,
             ),
             const SizedBox(height: 16.0),
-           
-               ImagePickerWidget(
-                onImageSelected: (image) => setState(() => selectedImage = image),
-              ),
-            
+            ImagePickerWidget(
+              onImageSelected: (image) => setState(() => selectedImage = image),
+            ),
             const SizedBox(height: 16.0),
-            ElevatedButton.icon(
+           ElevatedButton.icon(
               onPressed: () => _uploadImage(context),
               icon: const Icon(Icons.upload_file, color: Colors.white),
               label: imageUploadState.when(
-                data: (imageUrl) => Text(imageUrl.isEmpty ? 'Upload Image' : 'Uploaded Successfully',style: TextStyle(color: Colors.white),),
+                data: (imageUrl) => Text(
+                  imageUrl?.isEmpty ?? true ? 'Upload Image' : 'Uploaded Successfully',
+                  style: const TextStyle(color: Colors.white),
+                ),
                 loading: () => const CircularProgressIndicator(color: Colors.white),
                 error: (error, _) => const Text('Upload Failed'),
               ),
@@ -145,11 +208,7 @@ CustomTextFormField(
             ),
             const SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  // Perform registration logic
-                }
-              },
+              onPressed: () => _registerUser(context),
               child: const Text('Register', style: TextStyle(color: Colors.white)),
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
             ),
@@ -159,4 +218,3 @@ CustomTextFormField(
     );
   }
 }
-

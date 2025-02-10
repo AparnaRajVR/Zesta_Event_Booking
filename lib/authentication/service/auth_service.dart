@@ -1,53 +1,72 @@
 
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // ✅ Import Firestore
 import 'package:google_sign_in/google_sign_in.dart';
 
-class AuthServices {
+class AuthService {
   final FirebaseAuth _firebaseAuth;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance; // ✅ Firestore instance
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  AuthServices(this._firebaseAuth);
+  AuthService(this._firebaseAuth);
 
-  // Stream to track authentication state changes (logged-in or logged-out)
-  Stream<User?> get authStateChange => _firebaseAuth.authStateChanges();
+  
+  Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
-  // ✅ **Sign In with Email & Password**
-  Future<String> signIn({required String email, required String password}) async {
+ 
+  Future<String> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
     try {
-      await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+      await _firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
       return "Login successful";
     } on FirebaseAuthException catch (e) {
       return e.message ?? 'An unknown error occurred';
     }
   }
 
-  // ✅ **Sign Up (Register) New User**
-  Future<String> signUp({
-    required String fullName,
+  /// Creates a new user account with email, password, and additional user details
+  Future<String> createUserWithEmailAndPassword({
     required String email,
     required String password,
     required String confirmPassword,
+    required String fullName,
+    Map<String, dynamic>? userDetails, 
   }) async {
     if (password != confirmPassword) {
-      return "Passwords do not match"; // 🔹 Password validation check
+      return "Passwords do not match";
     }
 
     try {
-      // 🔹 **Create user in Firebase Auth**
-      UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
+      final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      // 🔹 **Save user info in Firestore**
-      await _firestore.collection("users").doc(userCredential.user!.uid).set({
+      await userCredential.user?.sendEmailVerification();
+
+      final userId = userCredential.user!.uid;
+
+      // Step 1: Save Basic User Data in the "users" Collection
+      await _firestore.collection("users").doc(userId).set({
+        "uid": userId,
         "fullName": fullName,
         "email": email,
-        "uid": userCredential.user!.uid,
         "createdAt": DateTime.now(),
       });
+
+     
+      if (userDetails != null) {
+        await _firestore
+            .collection("users")
+            .doc(userId)
+            .collection("UserDetails")
+            .add(userDetails);
+      }
 
       return "SignUp successful";
     } on FirebaseAuthException catch (e) {
@@ -55,16 +74,11 @@ class AuthServices {
     }
   }
 
-  // ✅ **Sign Out**
-  Future<void> signOut() async {
-    await _firebaseAuth.signOut();
-  }
 
-  // ✅ **Google Sign-In**
   Future<String> signInWithGoogle() async {
     try {
-      final googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) return "Google Sign-In aborted"; 
+      final googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) return "Google Sign-In aborted";
 
       final googleAuth = await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
@@ -72,15 +86,15 @@ class AuthServices {
         idToken: googleAuth.idToken,
       );
 
-      UserCredential userCredential = await _firebaseAuth.signInWithCredential(credential);
+      final userCredential = await _firebaseAuth.signInWithCredential(credential);
 
-      // 🔹 **Check if new user and store additional info**
+      // Save user details if first time sign-in
       final userDoc = await _firestore.collection("users").doc(userCredential.user!.uid).get();
       if (!userDoc.exists) {
         await _firestore.collection("users").doc(userCredential.user!.uid).set({
+          "uid": userCredential.user!.uid,
           "fullName": googleUser.displayName ?? "No Name",
           "email": googleUser.email,
-          "uid": userCredential.user!.uid,
           "createdAt": DateTime.now(),
         });
       }
@@ -93,18 +107,56 @@ class AuthServices {
     }
   }
 
-  // ✅ **Get User Details from Firestore**
+  /// Retrieves user details from Firestore
   Future<Map<String, dynamic>?> getUserDetails() async {
     try {
-      User? user = _firebaseAuth.currentUser;
+      final user = _firebaseAuth.currentUser;
       if (user == null) return null;
 
-      DocumentSnapshot doc = await _firestore.collection("users").doc(user.uid).get();
+      final doc = await _firestore.collection("users").doc(user.uid).get();
       return doc.exists ? doc.data() as Map<String, dynamic> : null;
     } catch (e) {
       return null;
     }
   }
 
-  
+  /// Retrieves extended user details from the "UserDetails" subcollection
+  Future<List<Map<String, dynamic>>> getUserDetailsFromSubcollection() async {
+    try {
+      final user = _firebaseAuth.currentUser;
+      if (user == null) return [];
+
+      final querySnapshot = await _firestore
+          .collection("users")
+          .doc(user.uid)
+          .collection("UserDetails")
+          .get();
+
+      return querySnapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /// Checks if the current user's email is verified
+  Future<bool> isEmailVerified() async {
+    final user = _firebaseAuth.currentUser;
+    await user?.reload();
+    return user?.emailVerified ?? false;
+  }
+
+  /// Sends email verification to the current user
+  Future<void> sendVerificationEmail() async {
+    final user = _firebaseAuth.currentUser;
+    if (user != null && !user.emailVerified) {
+      await user.sendEmailVerification();
+    }
+  }
+
+  /// Signs out the current user
+  Future<void> signOut() async {
+    await _firebaseAuth.signOut();
+  }
 }

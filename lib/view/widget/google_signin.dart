@@ -47,7 +47,7 @@ class GoogleSignupButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
       onTap: () async {
-         final authService = ref.read(authServicesProvider);
+         final authService = ref.read(authServiceProvider);
         //  final authRepository = ref.read(authRepositoryProvider);
 
         final message = await authService.signInWithGoogle();

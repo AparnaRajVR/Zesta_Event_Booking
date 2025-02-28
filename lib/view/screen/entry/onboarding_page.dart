@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
-import 'package:z_organizer/view/screen/entry/signup_page.dart' show SignupPage, SignupScreen;
+import 'package:z_organizer/view/screen/entry/signup_page.dart';
 
 import '../../../VIewmodel/onbaording_viewmodel.dart';
 

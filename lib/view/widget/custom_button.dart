@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:z_organizer/constant/color.dart';
 
 class CustomButton extends StatelessWidget {
   final dynamic text;
@@ -29,7 +30,7 @@ class CustomButton extends StatelessWidget {
       onPressed: onPressed,
       child: Text(
         text,
-        style: textStyle ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+        style: textStyle ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textlight),
       ),
     );
   }

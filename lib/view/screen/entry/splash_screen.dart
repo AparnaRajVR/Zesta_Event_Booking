@@ -1,85 +1,74 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:z_organizer/providers/auth_providers.dart';
+import 'package:z_organizer/view/screen/entry/dashboard_page.dart';
+import 'package:z_organizer/view/screen/entry/login_screen.dart';
 
-import 'package:z_organizer/view/screen/entry/login_screen.dart' show LoginPage, LoginScreen;
-
-// import 'package:z_organizer/view/screen/entry/onboarding.dart';
-// import 'package:z_organizer/view/screen/entry/signup.dart';
-
-
-class SplashScreen extends ConsumerStatefulWidget {
+class SplashScreen extends ConsumerWidget {
   const SplashScreen({super.key});
 
   @override
-  SplashScreenState createState() => SplashScreenState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authStateProvider);
+
+    authState.when(
+      data: (user) {
+        Future.microtask(() {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => user == null ? LoginPage() : Dashboard(),
+            ),
+          );
+        });
+      },
+      loading: () {
+        print("Loading authentication state...");
+      },
+      error: (error, stack) {
+        print("Error in auth state: $error");
+      },
+    );
+
+    return Scaffold(
+      body: Center(
+        child: AnimatedSplashLogo(),
+      ),
+    );
+  }
 }
 
-class SplashScreenState extends ConsumerState<SplashScreen> {
+// Animated Logo Widget
+class AnimatedSplashLogo extends StatefulWidget {
+  @override
+  _AnimatedSplashLogoState createState() => _AnimatedSplashLogoState();
+}
+
+class _AnimatedSplashLogoState extends State<AnimatedSplashLogo> {
   double _opacity = 0.0;
-  double _scale = 0.5; 
+  double _scale = 0.5;
 
   @override
   void initState() {
     super.initState();
-    
-
     Future.delayed(Duration(milliseconds: 500), () {
       setState(() {
-        _opacity = 1.0; 
-        _scale = 1.0; 
+        _opacity = 1.0;
+        _scale = 1.0;
       });
-    });
-
-    
-    Future.delayed(Duration(seconds: 3), () async {
-      Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => LoginPage()),
-            );
-      // final user = ref.read(authStateProvider);
-      
-      // // Wait for the authentication state to resolve
-      // await user.when(
-      //   data: (user) {
-      //     if (user == null) {
-      //       Navigator.pushReplacement(
-      //         context,
-      //         MaterialPageRoute(builder: (context) => RegisterForm()),
-      //       );
-      //     } else {
-      //       Navigator.pushReplacement(
-      //         context,
-      //         MaterialPageRoute(builder: (context) => Dashboard()),
-      //       );
-      //     }
-      //   },
-      //   loading: () {
-      //     // Optionally handle loading state
-      //     print("Loading authentication state...");
-      //   },
-      //   error: (error, stack) {
-      //     // Handle error state
-      //     print("Error in auth state: $error");
-      //   },
-      // );
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // backgroundColor: Colors.black,
-      body: Center(
-        child: AnimatedOpacity(
-          opacity: _opacity,
-          duration: Duration(seconds: 1),
-          child: AnimatedScale(
-            scale: _scale,
-            duration: Duration(seconds: 1), 
-            child: Image.asset('asset/logo.png'),
-          ),
-        ),
+    return AnimatedOpacity(
+      opacity: _opacity,
+      duration: Duration(seconds: 1),
+      child: AnimatedScale(
+        scale: _scale,
+        duration: Duration(seconds: 1),
+        child: Image.asset('asset/logo.png'),
       ),
     );
   }

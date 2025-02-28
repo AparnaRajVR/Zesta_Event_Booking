@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
@@ -12,8 +14,8 @@ class GlassEffect extends StatelessWidget {
     this.blurSigmaX = 10.0,
     this.blurSigmaY = 10.0,
     this.borderRadius,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

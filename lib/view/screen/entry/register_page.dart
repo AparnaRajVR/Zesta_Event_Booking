@@ -21,7 +21,7 @@ class RegisterScreen extends ConsumerWidget {
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [AppColors.second, Colors.white],
+            colors: [AppColors.second, AppColors. textlight],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),

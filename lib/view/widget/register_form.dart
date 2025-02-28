@@ -64,7 +64,6 @@ class _RegisterFormWidgetState extends ConsumerState<RegisterFormWidget> {
 
   Future<void> _registerUser(BuildContext context) async {
   if (_formKey.currentState!.validate()) {
-    // Show loading indicator
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -72,36 +71,28 @@ class _RegisterFormWidgetState extends ConsumerState<RegisterFormWidget> {
     );
 
     try {
-      // Get the current user's UID
       final currentUser = FirebaseAuth.instance.currentUser;
 
       if (currentUser != null) {
-        final userRef = FirebaseFirestore.instance
-            .collection('users')
-            .doc(currentUser.uid)
-            .collection('userdetails');
-
         // Upload image if selected
         String? imageUrl;
         if (selectedImage != null) {
           imageUrl = await ref.read(imageUploadProvider.notifier).uploadImage(selectedImage!);
         }
 
-        // Firestore operation to save user details in subcollection
-        await userRef.add({
+        // Firestore operation: Store user details in main document
+        await FirebaseFirestore.instance.collection('users').doc(currentUser.uid).set({
           'fullName': nameController.text,
           'email': emailController.text,
           'phone': phoneController.text,
           'address': addressController.text,
           'organizationName': orgNameController.text,
           'organizerType': selectedOrganizerType,
-          'profileImage': imageUrl,
+          'documentImage': imageUrl,
+          'status': "pending",  // <-- NEW FIELD
         });
 
-        // Close loading indicator
         Navigator.of(context).pop();
-
-        // Navigate to success page
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => SuccessPage()),
@@ -110,10 +101,7 @@ class _RegisterFormWidgetState extends ConsumerState<RegisterFormWidget> {
         throw Exception('User not logged in');
       }
     } catch (e) {
-      // Close loading indicator
       Navigator.of(context).pop();
-
-      // Show error SnackBar
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Registration failed: $e'),
@@ -123,6 +111,7 @@ class _RegisterFormWidgetState extends ConsumerState<RegisterFormWidget> {
     }
   }
 }
+
 
 
   @override
@@ -209,8 +198,9 @@ class _RegisterFormWidgetState extends ConsumerState<RegisterFormWidget> {
             const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () => _registerUser(context),
-              child: const Text('Register', style: TextStyle(color: Colors.white)),
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+              child: const Text('Register', 
+              style: TextStyle(color: Colors.white)),
             ),
           ],
         ),

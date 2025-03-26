@@ -3,35 +3,33 @@ import 'package:z_organizer/constant/color.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
-  final List<Widget>? actions;
-  final bool centerTitle;
 
-  const CustomAppBar({
-    Key? key,
-    required this.title,
-    this.actions,
-    this.centerTitle = true,
-  }) : super(key: key);
+  const CustomAppBar({Key? key, required this.title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      leading: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Image.asset("asset/images/logo.png", height: 60),
+      ),
       title: Text(
         title,
         style: const TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.bold,
-          color: AppColors.textlight,
+          color: AppColors.lightText
         ),
       ),
-      centerTitle: centerTitle,
-      backgroundColor: const Color.fromARGB(255, 164, 82, 179), 
+      backgroundColor:AppColors.primary,
       elevation: 4,
-      // shadowColor: const Color.fromARGB(255, 158, 158, 158),
-      actions: actions,
+      actions: [
+        IconButton(icon: const Icon(Icons.notifications,color:AppColors.lightText), onPressed: () {}),
+        IconButton(icon: const Icon(Icons.settings,color:AppColors.lightText), onPressed: () {}),
+      ],
     );
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight); // 56.0 px
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

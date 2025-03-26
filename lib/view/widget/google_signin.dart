@@ -1,62 +1,40 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:z_organizer/providers/auth_providers.dart';
+import 'package:z_organizer/view/screen/main_screens/dashboard_page.dart';
 
-class GoogleSignInButton extends StatelessWidget {
-  const GoogleSignInButton({super.key});
+class GoogleAuthButton extends ConsumerWidget {
+  final bool isSignUp; 
 
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton.icon(
-        onPressed: () {},
-        icon: Image.asset(
-          'asset/google_icon.png',
-          height: 24,
-          width: 24,
-        ),
-        label: const Text(
-          'Continue with Google',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.black87,
-          ),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: Colors.grey.shade300),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-
-
-class GoogleSignupButton extends ConsumerWidget {
-  const GoogleSignupButton({super.key});
+  const GoogleAuthButton({super.key, required this.isSignUp});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
       onTap: () async {
-         final authService = ref.read(authServiceProvider);
-        //  final authRepository = ref.read(authRepositoryProvider);
+  final authService = ref.read(authServiceProvider);
+  final message = await authService.signInWithGoogle();
 
-        final message = await authService.signInWithGoogle();
+  // Show feedback message
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text(message)),
+  );
 
-        // Handle feedback
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
-        );
-      },
+  // Navigate after successful sign-in
+  if (message == "Google Sign-In successful") {
+    if (isSignUp) {
+      Navigator.pushNamed(context, '/register');
+    } else {
+      Navigator.pushReplacement(context,
+         MaterialPageRoute(
+          builder: (context) => Dashboard(), 
+        ),
+      );
+    }
+  }
+},
+
       child: Container(
         width: double.infinity,
         height: 56,
@@ -82,9 +60,9 @@ class GoogleSignupButton extends ConsumerWidget {
               width: 24,
             ),
             const SizedBox(width: 12),
-            const Text(
-              'Sign up with Google',
-              style: TextStyle(
+            Text(
+              isSignUp ? 'Sign up with Google' : 'Continue with Google',
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,

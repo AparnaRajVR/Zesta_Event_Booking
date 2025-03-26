@@ -40,7 +40,7 @@ class LoginPage extends ConsumerWidget {
                     children: [
                       const LogoWidget(), 
                       const SizedBox(height: 32),
-                      const GoogleSignInButton(), 
+                      const GoogleAuthButton(isSignUp: false), 
                       const SizedBox(height: 24),
                       const DividerWithText(), 
                       const SizedBox(height: 24),

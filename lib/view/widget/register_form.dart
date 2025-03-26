@@ -89,7 +89,7 @@ class _RegisterFormWidgetState extends ConsumerState<RegisterFormWidget> {
           'organizationName': orgNameController.text,
           'organizerType': selectedOrganizerType,
           'documentImage': imageUrl,
-          'status': "pending",  // <-- NEW FIELD
+          'status': "pending",  
         });
 
         Navigator.of(context).pop();

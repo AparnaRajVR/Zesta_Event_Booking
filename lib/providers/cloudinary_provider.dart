@@ -6,7 +6,7 @@ import 'package:z_organizer/cloudinary/img_service.dart';
 
 
 final cloudinaryProvider = Provider<CloudinaryPublic>((ref) {
-  return CloudinaryPublic('dbu2ez12r', 'my_files', cache: false);
+  return CloudinaryPublic('dbu2ez12r', 'my_files', cache: true);
 });
 
 // CloudinaryService provider

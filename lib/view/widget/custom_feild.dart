@@ -15,6 +15,7 @@ class CustomTextFormField extends StatelessWidget {
   final List<DropdownMenuItem<String>>? dropdownItems;
   final void Function(String?)? onChanged;
   final String? selectedValue;
+  final TextInputType? keyboardType;
 
   const CustomTextFormField({
     super.key,
@@ -29,6 +30,7 @@ class CustomTextFormField extends StatelessWidget {
     this.dropdownItems,
     this.onChanged,
     this.selectedValue,
+    this.keyboardType,
   });
 
   InputDecoration getInputDecoration(BuildContext context) {
@@ -80,6 +82,8 @@ class CustomTextFormField extends StatelessWidget {
                 validator: validator,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 style: const TextStyle(fontSize: 16),
+                keyboardType: keyboardType,
+                onChanged: onChanged,
                 decoration: getInputDecoration(context), 
               ),
       ],

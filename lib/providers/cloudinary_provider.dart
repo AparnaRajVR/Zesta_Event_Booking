@@ -1,16 +1,32 @@
 
 
+import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloudinary_public/cloudinary_public.dart';
-import 'package:z_organizer/cloudinary/img_service.dart';
+import 'package:z_organizer/Dependency_injection.dart/cloudinary_image.dart';
 
-
-final cloudinaryProvider = Provider<CloudinaryPublic>((ref) {
-  return CloudinaryPublic('dbu2ez12r', 'my_files', cache: true);
-});
-
-// CloudinaryService provider
+// provider provides the cloudinary service
 final cloudinaryServiceProvider = Provider<CloudinaryService>((ref) {
-  final cloudinary = ref.watch(cloudinaryProvider);
-  return CloudinaryService(cloudinary);
+  return CloudinaryService(ref.read(cloudinaryInstance)); 
 });
+
+class CloudinaryService {
+  final CloudinaryPublic cloudinary;
+
+  CloudinaryService(this.cloudinary);
+
+  Future<String> uploadImage(File image) async {
+    try {
+      final response = await cloudinary.uploadFile(
+        CloudinaryFile.fromFile(image.path, resourceType: CloudinaryResourceType.Image),
+      );
+      return response.secureUrl;
+    } catch (e) {
+      throw Exception('Upload Failed: $e');
+    }
+  }
+}
+
+
+
+

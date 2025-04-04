@@ -1,9 +1,9 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:z_organizer/providers/auth_providers.dart';
+import 'package:z_organizer/services/auth_service.dart';
 import '../model/user_model.dart';
 
-import '../authentication/service/auth_service.dart';
 
 class SignupViewModel extends StateNotifier<AsyncValue<UserModel?>> {
   final AuthService _authService;

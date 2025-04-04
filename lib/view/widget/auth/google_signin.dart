@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:z_organizer/providers/auth_providers.dart';
+import 'package:z_organizer/view/screen/entry/register_page.dart';
 import 'package:z_organizer/view/screen/main_screens/dashboard_page.dart';
 
 class GoogleAuthButton extends ConsumerWidget {
@@ -24,7 +25,11 @@ class GoogleAuthButton extends ConsumerWidget {
   // Navigate after successful sign-in
   if (message == "Google Sign-In successful") {
     if (isSignUp) {
-      Navigator.pushNamed(context, '/register');
+      Navigator.pushReplacement(context,
+         MaterialPageRoute(
+          builder: (context) => RegisterScreen(), 
+        ),
+      );
     } else {
       Navigator.pushReplacement(context,
          MaterialPageRoute(
@@ -55,7 +60,7 @@ class GoogleAuthButton extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'asset/google_icon.png',
+              'asset/images/google_icon.png',
               height: 24,
               width: 24,
             ),

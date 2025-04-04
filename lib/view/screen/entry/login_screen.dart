@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:z_organizer/view/screen/entry/signup_page.dart';
 import 'package:z_organizer/view/widget/divider_widget.dart';
-import 'package:z_organizer/view/widget/feild_widget.dart';
+import 'package:z_organizer/view/widget/auth/feild_widget.dart';
 import 'package:z_organizer/view/widget/glass_container.dart';
-import 'package:z_organizer/view/widget/google_signin.dart';
-import 'package:z_organizer/view/widget/signin_button.dart';
-import 'package:z_organizer/view/widget/signup_prompt.dart';
+import 'package:z_organizer/view/widget/auth/google_signin.dart';
+import 'package:z_organizer/view/widget/auth/signin_button.dart';
+import 'package:z_organizer/view/widget/auth/signup_prompt.dart';
 import 'package:z_organizer/view/widget/terms_condition.dart';
 import '../../../VIewmodel/login_viewmodel.dart';
 import '../../widget/logo_widget.dart';// 

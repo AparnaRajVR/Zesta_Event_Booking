@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:z_organizer/view/screen/entry/login_screen.dart';
 import 'package:z_organizer/view/screen/entry/signup_page.dart';
 
 import '../../../VIewmodel/onbaording_viewmodel.dart';
@@ -28,11 +29,11 @@ class OnboardingScreen extends StatelessWidget {
         }).toList(),
         onDone: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) =>SignupPage()),
+          MaterialPageRoute(builder: (context) =>LoginPage()),
         ),
         onSkip: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) =>SignupPage()),
+          MaterialPageRoute(builder: (context) =>LoginPage()),
         ),
         showSkipButton: true,
         skip: const Text(
@@ -52,7 +53,7 @@ class OnboardingScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(25.0),
           ),
         ),
-        globalBackgroundColor: Colors.black,
+        globalBackgroundColor: Colors.white,
       ),
     );
   }

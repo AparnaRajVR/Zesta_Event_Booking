@@ -128,10 +128,10 @@ class Dashboard extends ConsumerStatefulWidget {
   const Dashboard({super.key});
 
   @override
-  _DashboardState createState() => _DashboardState();
+  DashboardState createState() => DashboardState();
 }
 
-class _DashboardState extends ConsumerState<Dashboard> {
+class DashboardState extends ConsumerState<Dashboard> {
   SelectedTab _selectedTab = SelectedTab.home;
 
   void _onTabSelected(SelectedTab tab) {
@@ -139,7 +139,7 @@ class _DashboardState extends ConsumerState<Dashboard> {
       // Open Add Event Page Instead of Changing Tab
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => AddEventScreen()),
+        MaterialPageRoute(builder: (context) => AddEventScreen()) // Replace with your Add Event Page
       );
     } else {
       setState(() {

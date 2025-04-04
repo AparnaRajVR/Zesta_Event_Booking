@@ -7,7 +7,7 @@ import 'package:z_organizer/constant/color.dart';
 import 'package:z_organizer/view/screen/entry/register_page.dart';
 import 'package:z_organizer/view/widget/custom_feild.dart';
 import 'package:z_organizer/view/widget/divider_widget.dart';
-import 'package:z_organizer/view/widget/google_signin.dart';
+import 'package:z_organizer/view/widget/auth/google_signin.dart';
 import 'package:z_organizer/view/widget/logo_widget.dart';
 import 'package:z_organizer/view/widget/terms_condition.dart';
 import 'package:z_organizer/viewmodel/signup_viewmodel.dart';

@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:z_organizer/providers/auth_providers.dart';
 import 'package:z_organizer/view/screen/entry/login_screen.dart';
 import 'package:z_organizer/view/screen/entry/onboarding_page.dart';
+import 'package:z_organizer/view/screen/entry/register_page.dart';
 import 'package:z_organizer/view/screen/entry/splash_screen.dart';
 import 'package:z_organizer/view/screen/entry/verification_status.dart';
 import 'package:z_organizer/view/screen/main_screens/dashboard_page.dart';
@@ -41,7 +42,7 @@ class AuthChecker extends ConsumerWidget {
               } else if (snapshot.data == "pending") {
                 return const SuccessPage();
               }
-              return Scaffold(body: Center(child: Text("Unknown status")));
+              return RegisterScreen();
             },
           );
         }

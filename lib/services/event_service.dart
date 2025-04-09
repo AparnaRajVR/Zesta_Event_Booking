@@ -1,3 +1,4 @@
+
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,6 +30,10 @@ class FirebaseService {
     required String description,
     required String address,
     required String city,
+    required String categoryId,
+    required String duration,
+    required List<String> ageLimit,
+    required List<String> languages,
     required DateTime? date,
     required DateTime? startTime,
     required DateTime? endTime,
@@ -42,6 +47,10 @@ class FirebaseService {
         "description": description,
         "address": address,
         "city": city,
+        "categoryId": categoryId,
+        "duration": duration,
+        "ageLimit": ageLimit,
+        "languages": languages,
         "date": date?.toIso8601String(),
         "startTime": startTime?.toIso8601String(),
         "endTime": endTime?.toIso8601String(),
@@ -53,4 +62,3 @@ class FirebaseService {
     }
   }
 }
-

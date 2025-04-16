@@ -7,34 +7,26 @@ import 'package:z_organizer/providers/event_provider.dart';
 import 'package:z_organizer/services/event_service.dart';
 
 class AddEventScreen extends ConsumerWidget {
-   AddEventScreen({super.key});
+  AddEventScreen({super.key});
 
   final _formKey = GlobalKey<FormState>();
 
+  // Static controllers to persist across rebuilds
+  static final _controllers = {
+    'name': TextEditingController(),
+    'organizerName': TextEditingController(),
+    'description': TextEditingController(),
+    'address': TextEditingController(),
+    'city': TextEditingController(),
+    'duration': TextEditingController(),
+    'ticketPrice': TextEditingController(),
+  };
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _controllers = {
-      'name': TextEditingController(),
-      'description': TextEditingController(),
-      'address': TextEditingController(),
-      'city': TextEditingController(),
-      'duration': TextEditingController(),
-    };
-
-    // Local variables for dropdowns (since stateless, we use Consumer to rebuild)
-    String? selectedCategoryId;
-    String? selectedAgeLimit;
-    List<String> selectedLanguages = [];
-
-    // Hardcoded options
-    final List<String> _categories = ['Concert', 'Workshop', 'Sports', 'Conference'];
+    // Hardcoded options for age limits and languages
     final List<String> _ageLimits = ['All Ages', '13+', '18+', '21+'];
     final List<String> _languages = ['English', 'Spanish', 'French', 'German'];
-
-    final selectedImages = ref.watch(selectedImageProvider);
-    final selectedDate = ref.watch(eventDateProvider);
-    final startTime = ref.watch(startTimeProvider);
-    final endTime = ref.watch(endTimeProvider);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -50,6 +42,7 @@ class AddEventScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _buildTextField('Event Name', _controllers['name']!),
+                  _buildTextField('Organizer Name', _controllers['organizerName']!),
                   _buildTextField('Description', _controllers['description']!, maxLines: 3),
                   Row(
                     children: [
@@ -59,54 +52,97 @@ class AddEventScreen extends ConsumerWidget {
                     ],
                   ),
                   _buildTextField('Duration', _controllers['duration']!),
+                  _buildTextField('Ticket Price', _controllers['ticketPrice']!, keyboardType: TextInputType.number),
+                  // Dynamic category dropdown
                   Consumer(
-                    builder: (context, ref, _) => _buildDropdown(
-                      'Category',
-                      _categories,
-                      selectedCategoryId,
-                      (value) => selectedCategoryId = value,
-                    ),
+                    builder: (context, ref, _) {
+                      return ref.watch(eventCategoriesProvider).when(
+                            data: (categories) => categories.isEmpty
+                                ? const Text('No categories available', style: TextStyle(color: Colors.red))
+                                : _buildDropdown(
+                                    'Category',
+                                    categories.map((cat) => cat['name'] as String).toList(),
+                                    categories.firstWhere(
+                                      (cat) => cat['id'] == ref.watch(selectedCategoryIdProvider),
+                                      orElse: () => {'id': null, 'name': null},
+                                    )['name'],
+                                    (value) {
+                                      final selected = categories.firstWhere((cat) => cat['name'] == value);
+                                      ref.read(selectedCategoryIdProvider.notifier).state = selected['id'] as String;
+                                    },
+                                  ),
+                            loading: () => const Center(child: CircularProgressIndicator()),
+                            error: (error, _) => Text('Failed to load categories: $error', style: const TextStyle(color: Colors.red)),
+                          );
+                    },
                   ),
                   Consumer(
-                    builder: (context, ref, _) => _buildDropdown(
-                      'Age Limit',
-                      _ageLimits,
-                      selectedAgeLimit,
-                      (value) => selectedAgeLimit = value,
-                    ),
+                    builder: (context, ref, _) {
+                      final selectedAgeLimit = ref.watch(selectedAgeLimitProvider);
+                      return _buildDropdown(
+                        'Age Limit',
+                        _ageLimits,
+                        selectedAgeLimit,
+                        (value) => ref.read(selectedAgeLimitProvider.notifier).state = value,
+                      );
+                    },
                   ),
                   Consumer(
-                    builder: (context, ref, _) => _buildMultiSelectDropdown(
-                      'Languages',
-                      _languages,
-                      selectedLanguages,
-                    ),
+                    builder: (context, ref, _) {
+                      final selectedLanguages = ref.watch(selectedLanguagesProvider);
+                      return _buildMultiSelectDropdown(
+                        'Languages',
+                        _languages,
+                        selectedLanguages,
+                        (newLanguages) => ref.read(selectedLanguagesProvider.notifier).state = newLanguages,
+                      );
+                    },
                   ),
-                  _buildSelector('Date', selectedDate, () => _pickDate(context, ref), Icons.calendar_today),
+                  Consumer(
+                    builder: (context, ref, _) {
+                      final selectedDate = ref.watch(eventDateProvider);
+                      return _buildSelector('Date', selectedDate, () => _pickDate(context, ref), Icons.calendar_today);
+                    },
+                  ),
                   Row(
                     children: [
                       Expanded(
-                        child: _buildSelector('Start Time', startTime, () => _pickStartTime(context, ref), Icons.access_time),
+                        child: Consumer(
+                          builder: (context, ref, _) {
+                            final startTime = ref.watch(startTimeProvider);
+                            return _buildSelector('Start Time', startTime, () => _pickStartTime(context, ref), Icons.access_time);
+                          },
+                        ),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
-                        child: _buildSelector('End Time', endTime, () => _pickEndTime(context, ref), Icons.access_time),
+                        child: Consumer(
+                          builder: (context, ref, _) {
+                            final endTime = ref.watch(endTimeProvider);
+                            return _buildSelector('End Time (Optional)', endTime, () => _pickEndTime(context, ref), Icons.access_time);
+                          },
+                        ),
                       ),
                     ],
                   ),
-                  _buildImageSection(selectedImages, ref),
+                  Consumer(
+                    builder: (context, ref, _) {
+                      final selectedImages = ref.watch(selectedImageProvider);
+                      return _buildImageSection(selectedImages, ref);
+                    },
+                  ),
                   const SizedBox(height: 20),
                   _buildCreateButton(
-                    selectedImages,
-                    selectedDate,
-                    startTime,
-                    endTime,
+                    ref.watch(selectedImageProvider),
+                    ref.watch(eventDateProvider),
+                    ref.watch(startTimeProvider),
+                    ref.watch(endTimeProvider),
                     ref,
                     _controllers,
                     context,
-                    () => selectedCategoryId = null,
-                    () => selectedAgeLimit = null,
-                    () => selectedLanguages.clear(),
+                    ref.watch(selectedCategoryIdProvider),
+                    ref.watch(selectedAgeLimitProvider),
+                    ref.watch(selectedLanguagesProvider),
                   ),
                 ],
               ),
@@ -143,7 +179,7 @@ class AddEventScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, {int maxLines = 1}) {
+  Widget _buildTextField(String label, TextEditingController controller, {int maxLines = 1, TextInputType? keyboardType}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Column(
@@ -153,8 +189,15 @@ class AddEventScreen extends ConsumerWidget {
           TextFormField(
             controller: controller,
             maxLines: maxLines,
+            keyboardType: keyboardType,
             decoration: _inputDecoration(label),
-            validator: (value) => value!.isEmpty ? 'Please enter $label' : null,
+            validator: (value) {
+              if (value == null || value.isEmpty) return 'Please enter $label';
+              if (label == 'Ticket Price' && double.tryParse(value) == null) {
+                return 'Please enter a valid number';
+              }
+              return null;
+            },
           ),
         ],
       ),
@@ -181,7 +224,7 @@ class AddEventScreen extends ConsumerWidget {
                         ? label.contains('Time')
                             ? DateFormat.jm().format(value)
                             : DateFormat('yyyy-MM-dd').format(value)
-                        : 'Select $label',
+                        : label.contains('Optional') ? 'Optional' : 'Select $label',
                     style: TextStyle(color: Colors.deepPurple.shade700),
                   ),
                   Icon(icon, color: Colors.deepPurple.shade700),
@@ -205,7 +248,7 @@ class AddEventScreen extends ConsumerWidget {
             value: selectedValue,
             decoration: _inputDecoration(label),
             items: items.map((item) => DropdownMenuItem(value: item, child: Text(item))).toList(),
-            onChanged: (value) => onChanged(value),
+            onChanged: onChanged,
             validator: (value) => value == null ? 'Please select $label' : null,
           ),
         ],
@@ -213,7 +256,7 @@ class AddEventScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMultiSelectDropdown(String label, List<String> items, List<String> selectedValues) {
+  Widget _buildMultiSelectDropdown(String label, List<String> items, List<String> selectedValues, Function(List<String>) onChanged) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Column(
@@ -225,11 +268,11 @@ class AddEventScreen extends ConsumerWidget {
             items: items.map((item) => DropdownMenuItem(value: item, child: Text(item))).toList(),
             onChanged: (value) {
               if (value != null && !selectedValues.contains(value)) {
-                selectedValues.add(value);
+                onChanged(List.from(selectedValues)..add(value));
               }
             },
             hint: Text(selectedValues.isEmpty ? 'Select $label' : selectedValues.join(', ')),
-            validator: (value) => selectedValues.isEmpty ? 'Please select at least one $label' : null,
+                  validator: (value) => selectedValues.isEmpty ? 'Please select at least one $label' : null,
           ),
         ],
       ),
@@ -282,9 +325,9 @@ class AddEventScreen extends ConsumerWidget {
     WidgetRef ref,
     Map<String, TextEditingController> controllers,
     BuildContext context,
-    VoidCallback clearCategory,
-    VoidCallback clearAgeLimit,
-    VoidCallback clearLanguages,
+    String? selectedCategoryId,
+    String? selectedAgeLimit,
+    List<String> selectedLanguages,
   ) {
     return ElevatedButton(
       style: _buttonStyle(),
@@ -296,9 +339,9 @@ class AddEventScreen extends ConsumerWidget {
         ref,
         controllers,
         context,
-        clearCategory,
-        clearAgeLimit,
-        clearLanguages,
+        selectedCategoryId,
+        selectedAgeLimit,
+        selectedLanguages,
       ),
       child: const Text('Create Event', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
     );
@@ -404,14 +447,19 @@ class AddEventScreen extends ConsumerWidget {
     WidgetRef ref,
     Map<String, TextEditingController> controllers,
     BuildContext context,
-    VoidCallback clearCategory,
-    VoidCallback clearAgeLimit,
-    VoidCallback clearLanguages,
+    String? selectedCategoryId,
+    String? selectedAgeLimit,
+    List<String> selectedLanguages,
   ) async {
     final formState = _formKey.currentState;
-    if (!formState!.validate() || images.isEmpty || date == null || start == null || end == null) {
+    if (!formState!.validate() ||
+        images.isEmpty ||
+        date == null ||
+        start == null ||
+        selectedCategoryId == null ||
+        selectedAgeLimit == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields and select at least one image')),
+        const SnackBar(content: Text('Please fill all required fields and select at least one image')),
       );
       return;
     }
@@ -421,40 +469,36 @@ class AddEventScreen extends ConsumerWidget {
       final imageUrls = await firebaseService.uploadImages(images);
       await firebaseService.createEvent(
         name: controllers['name']!.text,
+        organizerName: controllers['organizerName']!.text,
         description: controllers['description']!.text,
         address: controllers['address']!.text,
         city: controllers['city']!.text,
-        categoryId: controllers['categoryId']?.text ?? 'default_category', // Adjust based on your actual logic
+        categoryId: selectedCategoryId,
         duration: controllers['duration']!.text,
-        ageLimit: [controllers['ageLimit']?.text ?? 'All Ages'], // Adjust based on your actual logic
-        languages: controllers['languages']?.text.split(',') ?? ['English'], // Adjust based on your actual logic
+        ageLimit: [selectedAgeLimit],
+        languages: selectedLanguages.isNotEmpty ? selectedLanguages : ['English'],
         date: date,
         startTime: start,
         endTime: end,
         imageUrls: imageUrls,
+        ticketPrice: double.parse(controllers['ticketPrice']!.text),
       );
 
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Event Created Successfully!')));
-      _clearFields(ref, controllers, clearCategory, clearAgeLimit, clearLanguages);
+      _clearFields(ref, controllers);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to create event: $e')));
     }
   }
 
-  void _clearFields(
-    WidgetRef ref,
-    Map<String, TextEditingController> controllers,
-    VoidCallback clearCategory,
-    VoidCallback clearAgeLimit,
-    VoidCallback clearLanguages,
-  ) {
+  void _clearFields(WidgetRef ref, Map<String, TextEditingController> controllers) {
     controllers.forEach((_, controller) => controller.clear());
-    clearCategory();
-    clearAgeLimit();
-    clearLanguages();
     ref.read(selectedImageProvider.notifier).state = [];
     ref.read(eventDateProvider.notifier).state = null;
     ref.read(startTimeProvider.notifier).state = null;
     ref.read(endTimeProvider.notifier).state = null;
+    ref.read(selectedCategoryIdProvider.notifier).state = null;
+    ref.read(selectedAgeLimitProvider.notifier).state = null;
+    ref.read(selectedLanguagesProvider.notifier).state = [];
   }
 }

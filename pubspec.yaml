@@ -39,9 +39,9 @@ dependencies:
     sdk: flutter
   flutter_riverpod: ^2.6.1
   geocoding: ^3.0.0
-  geolocator: ^13.0.4
+  # geolocator: ^13.0.4
   glassmorphism: ^3.0.0
-  google_maps_flutter: ^2.12.1
+  # google_maps_flutter: ^2.12.1
   google_sign_in: ^6.2.2
   iconly: ^1.0.1
   image_picker: ^1.1.2

@@ -27,6 +27,7 @@ class FirebaseService {
 
   Future<void> createEvent({
     required String name,
+    required  String organizerName,
     required String description,
     required String address,
     required String city,
@@ -36,14 +37,16 @@ class FirebaseService {
     required List<String> languages,
     required DateTime? date,
     required DateTime? startTime,
-    required DateTime? endTime,
+    DateTime? endTime, //Making this optional
     required List<String> imageUrls,
+    required double ticketPrice,
   }) async {
     final firestore = FirebaseFirestore.instance;
 
     try {
       await firestore.collection("events").add({
         "name": name,
+        "organizerName": organizerName,
         "description": description,
         "address": address,
         "city": city,
@@ -53,8 +56,9 @@ class FirebaseService {
         "languages": languages,
         "date": date?.toIso8601String(),
         "startTime": startTime?.toIso8601String(),
-        "endTime": endTime?.toIso8601String(),
+        "endTime": endTime?.toIso8601String(), //It can be null now
         "images": imageUrls,
+        "ticketPrice": ticketPrice,
         "createdAt": FieldValue.serverTimestamp(),
       });
     } catch (e) {

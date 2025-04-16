@@ -16,6 +16,7 @@
 //   DateTime? startTime;
 //   DateTime? endTime;
 //   List<String> images;
+//   double ticketPrice; 
 
 //   EventModel({
 //     this.id,
@@ -31,6 +32,7 @@
 //     this.startTime,
 //     this.endTime,
 //     this.images = const [],
+//     required this.ticketPrice, 
 //   });
 
 //   // Convert to Firestore document
@@ -48,6 +50,7 @@
 //       'startTime': startTime?.toIso8601String(),
 //       'endTime': endTime?.toIso8601String(),
 //       'images': images,
+//       'ticketPrice': ticketPrice, 
 //       'createdAt': FieldValue.serverTimestamp(),
 //     };
 //   }
@@ -69,15 +72,18 @@
 //       startTime: data['startTime'] != null ? DateTime.parse(data['startTime']) : null,
 //       endTime: data['endTime'] != null ? DateTime.parse(data['endTime']) : null,
 //       images: List<String>.from(data['images'] ?? []),
+//       ticketPrice: (data['ticketPrice'] as num?)?.toDouble() ?? 0.0,
 //     );
 //   }
 // }
+
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class EventModel {
   String? id;
   String name;
+  String organizerName;
   String description;
   String address;
   String city;
@@ -89,11 +95,12 @@ class EventModel {
   DateTime? startTime;
   DateTime? endTime;
   List<String> images;
-  double ticketPrice; // New field
+  double ticketPrice;
 
   EventModel({
     this.id,
     required this.name,
+    required this.organizerName,
     required this.description,
     required this.address,
     required this.city,
@@ -105,13 +112,14 @@ class EventModel {
     this.startTime,
     this.endTime,
     this.images = const [],
-    required this.ticketPrice, // Added as required
+    required this.ticketPrice,
   });
 
   // Convert to Firestore document
   Map<String, dynamic> toFirestore() {
     return {
       'name': name,
+      'organizerName': organizerName,
       'description': description,
       'address': address,
       'city': city,
@@ -123,7 +131,7 @@ class EventModel {
       'startTime': startTime?.toIso8601String(),
       'endTime': endTime?.toIso8601String(),
       'images': images,
-      'ticketPrice': ticketPrice, // Added to Firestore
+      'ticketPrice': ticketPrice,
       'createdAt': FieldValue.serverTimestamp(),
     };
   }
@@ -134,6 +142,7 @@ class EventModel {
     return EventModel(
       id: doc.id,
       name: data['name'] ?? '',
+      organizerName: data['organizerName'] ?? '',
       description: data['description'] ?? '',
       address: data['address'] ?? '',
       city: data['city'] ?? '',
@@ -145,7 +154,7 @@ class EventModel {
       startTime: data['startTime'] != null ? DateTime.parse(data['startTime']) : null,
       endTime: data['endTime'] != null ? DateTime.parse(data['endTime']) : null,
       images: List<String>.from(data['images'] ?? []),
-      ticketPrice: (data['ticketPrice'] as num?)?.toDouble() ?? 0.0, // Added with default
+      ticketPrice: (data['ticketPrice'] as num?)?.toDouble() ?? 0.0,
     );
   }
 }

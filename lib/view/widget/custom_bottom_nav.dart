@@ -33,7 +33,7 @@ class CustomBottomNav extends StatelessWidget {
             selectedColor:AppColors.bottomNavSelectedIcon
           ),
           CrystalNavigationBarItem(
-            icon: IconlyBold.heart,
+            icon: IconlyBold.calendar,
             unselectedIcon: IconlyLight.calendar,
             selectedColor:AppColors.bottomNavSelectedIcon
           ),
@@ -43,13 +43,13 @@ class CustomBottomNav extends StatelessWidget {
             selectedColor:AppColors.bottomNavSelectedIcon
           ),
           CrystalNavigationBarItem(
-            icon: IconlyBold.search,
+            icon: IconlyBold.ticket,
             unselectedIcon: IconlyLight.ticket,
             selectedColor:AppColors.bottomNavSelectedIcon
           ),
           CrystalNavigationBarItem(
             icon: IconlyBold.user_2,
-            unselectedIcon: IconlyLight.chart,
+            unselectedIcon: IconlyLight.user,
             selectedColor:AppColors.bottomNavSelectedIcon
           ),
         ],

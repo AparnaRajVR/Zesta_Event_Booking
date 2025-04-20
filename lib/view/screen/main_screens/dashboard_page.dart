@@ -3,49 +3,78 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:z_organizer/view/screen/main_screens/add_event_page.dart';
 import 'package:z_organizer/view/screen/main_screens/analytics_page.dart';
+import 'package:z_organizer/view/screen/main_screens/home_screen.dart';
+import 'package:z_organizer/view/screen/main_screens/profile_page.dart';
 import 'package:z_organizer/view/screen/main_screens/ticket_page.dart';
+import 'package:z_organizer/view/widget/custom_appbar.dart';
 import 'package:z_organizer/view/widget/custom_bottom_nav.dart';
 
-class Dashboard extends ConsumerStatefulWidget {
+
+final selectedTabProvider = StateProvider<int>((ref) => SelectedTab.home.index);
+
+
+
+class Dashboard extends ConsumerWidget {
   const Dashboard({super.key});
 
-  @override
-  DashboardState createState() => DashboardState();
-}
 
-class DashboardState extends ConsumerState<Dashboard> {
-  SelectedTab _selectedTab = SelectedTab.home;
-
-  void _onTabSelected(SelectedTab tab) {
+  void _onTabSelected(WidgetRef ref, BuildContext context, SelectedTab tab) {
     if (tab == SelectedTab.add) {
-      // Open Add Event Page Instead of Changing Tab
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => AddEventScreen()) 
+        MaterialPageRoute(builder: (context) => AddEventScreen()),
       );
     } else {
-      setState(() {
-        _selectedTab = tab;
-      });
+      ref.read(selectedTabProvider.notifier).state = tab.index;
     }
   }
 
+
+  void _showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
   @override
-  Widget build(BuildContext context) {
-    // Pages Based on Selected Tab
-    final List<Widget> pages = [
-      Center(child: Text("Home Screen")), 
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedTabIndex = ref.watch(selectedTabProvider);
+
+    const pages = [
+      HomeScreen(),
       TicketPage(),
-      Container(), 
+      SizedBox(), 
       AnalyticsPage(),
-      Center(child: Text("User Profile")),
+      UserProfileScreen(),
     ];
 
     return Scaffold(
-      body: pages[_selectedTab.index],
+      appBar: CustomAppBar(
+        title: 'Zesta',
+        
+        
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              decoration: InputDecoration(
+                hintText: 'Search events...',
+                hintStyle: TextStyle(color: Colors.grey.shade600),
+                prefixIcon: Icon(Icons.search, color: Colors.deepPurple.shade700),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              ),
+              onSubmitted: (value) => _showSnackBar(context, 'Searching for: $value'),
+            ),
+            Expanded(child: pages[selectedTabIndex]),
+          ],
+        ),
+      ),
       bottomNavigationBar: CustomBottomNav(
-        selectedTab: _selectedTab,
-        onTabSelected: _onTabSelected,
+        selectedTab: SelectedTab.values[selectedTabIndex],
+        onTabSelected: (tab) => _onTabSelected(ref, context, tab),
       ),
     );
   }

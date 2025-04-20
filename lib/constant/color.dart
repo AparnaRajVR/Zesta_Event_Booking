@@ -23,7 +23,8 @@ class AppColors {
    static const Color primary =Color.fromARGB(255, 153, 76, 167);
   static const Color secondary = Color(0xFF4FD1C5); 
   static const Color background = Colors.white;
-  // 
+  static const Color appbar = Colors.deepPurple;
+   
 
   // Bottom Navigation Colors
   static final Color bottomNavBackground = Colors.black.withOpacity(0.1);

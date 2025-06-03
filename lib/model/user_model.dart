@@ -41,5 +41,5 @@ class UserModel {
       profileImageUrl: json['profileImageUrl'],
     );
   }
-}
 
+}

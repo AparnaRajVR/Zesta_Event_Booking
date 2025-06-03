@@ -1,3 +1,4 @@
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:z_organizer/providers/event_provider.dart';
 import 'package:z_organizer/services/event_service.dart';
+import 'package:z_organizer/view/screen/main_screens/dashboard_page.dart';
 
 class AddEventScreen extends ConsumerWidget {
   AddEventScreen({super.key});
@@ -20,13 +22,14 @@ class AddEventScreen extends ConsumerWidget {
     'city': TextEditingController(),
     'duration': TextEditingController(),
     'ticketPrice': TextEditingController(),
+    'ticketCount': TextEditingController(),
   };
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Hardcoded options for age limits and languages
-    final List<String> _ageLimits = ['All Ages', '13+', '18+', '21+'];
-    final List<String> _languages = ['English', 'Spanish', 'French', 'German'];
+    final List<String> _ageLimits = ['All Ages', '5yrs +', '12yrs +', '18yrs +', '21yrs +'];
+    final List<String> _languages = ['English', 'Malayalam', 'Hindi', 'Tamil'];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -53,26 +56,43 @@ class AddEventScreen extends ConsumerWidget {
                   ),
                   _buildTextField('Duration', _controllers['duration']!),
                   _buildTextField('Ticket Price', _controllers['ticketPrice']!, keyboardType: TextInputType.number),
+                  
+                   _buildTextField('Ticket Count', _controllers['ticketCount']!, keyboardType: TextInputType.number),
                   // Dynamic category dropdown
                   Consumer(
                     builder: (context, ref, _) {
                       return ref.watch(eventCategoriesProvider).when(
-                            data: (categories) => categories.isEmpty
-                                ? const Text('No categories available', style: TextStyle(color: Colors.red))
-                                : _buildDropdown(
-                                    'Category',
-                                    categories.map((cat) => cat['name'] as String).toList(),
-                                    categories.firstWhere(
-                                      (cat) => cat['id'] == ref.watch(selectedCategoryIdProvider),
-                                      orElse: () => {'id': null, 'name': null},
-                                    )['name'],
-                                    (value) {
-                                      final selected = categories.firstWhere((cat) => cat['name'] == value);
-                                      ref.read(selectedCategoryIdProvider.notifier).state = selected['id'] as String;
-                                    },
-                                  ),
+                            data: (categories) {
+                              print('Categories updated: $categories');
+                              if (categories.isEmpty) {
+                                return const Text(
+                                  'No categories available',
+                                  style: TextStyle(color: Colors.red),
+                                );
+                              }
+                              final selectedId = ref.watch(selectedCategoryIdProvider);
+                              final selectedCategory = categories.firstWhere(
+                                (cat) => cat['id'] == selectedId,
+                                orElse: () => categories.first,
+                              );
+                              return _buildDropdown(
+                                'Category',
+                                categories.map((cat) => cat['name'] as String).toList(),
+                                selectedCategory['name'] as String,
+                                (value) {
+                                  final selected = categories.firstWhere((cat) => cat['name'] == value);
+                                  ref.read(selectedCategoryIdProvider.notifier).state = selected['id'] as String;
+                                },
+                              );
+                            },
                             loading: () => const Center(child: CircularProgressIndicator()),
-                            error: (error, _) => Text('Failed to load categories: $error', style: const TextStyle(color: Colors.red)),
+                            error: (error, stackTrace) {
+                              print('Error: $error\n$stackTrace');
+                              return Text(
+                                'Failed to load categories: $error',
+                                style: const TextStyle(color: Colors.red),
+                              );
+                            },
                           );
                     },
                   ),
@@ -272,7 +292,7 @@ class AddEventScreen extends ConsumerWidget {
               }
             },
             hint: Text(selectedValues.isEmpty ? 'Select $label' : selectedValues.join(', ')),
-                  validator: (value) => selectedValues.isEmpty ? 'Please select at least one $label' : null,
+            validator: (value) => selectedValues.isEmpty ? 'Please select at least one $label' : null,
           ),
         ],
       ),
@@ -342,6 +362,7 @@ class AddEventScreen extends ConsumerWidget {
         selectedCategoryId,
         selectedAgeLimit,
         selectedLanguages,
+        
       ),
       child: const Text('Create Event', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
     );
@@ -482,17 +503,30 @@ class AddEventScreen extends ConsumerWidget {
         endTime: end,
         imageUrls: imageUrls,
         ticketPrice: double.parse(controllers['ticketPrice']!.text),
+        ticketCount: int.parse(controllers['ticketCount']!.text),
       );
 
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Event Created Successfully!')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Event Created Successfully!')),
+      );
+
+      // Clear all fields and reset providers
       _clearFields(ref, controllers);
+
+      // Navigate to dashboard
+      _navigateToDashboard(context);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to create event: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to create event: $e')),
+      );
     }
   }
 
   void _clearFields(WidgetRef ref, Map<String, TextEditingController> controllers) {
+    // Clear all text controllers
     controllers.forEach((_, controller) => controller.clear());
+
+    // Reset all providers
     ref.read(selectedImageProvider.notifier).state = [];
     ref.read(eventDateProvider.notifier).state = null;
     ref.read(startTimeProvider.notifier).state = null;
@@ -500,5 +534,14 @@ class AddEventScreen extends ConsumerWidget {
     ref.read(selectedCategoryIdProvider.notifier).state = null;
     ref.read(selectedAgeLimitProvider.notifier).state = null;
     ref.read(selectedLanguagesProvider.notifier).state = [];
+  }
+
+  void _navigateToDashboard(BuildContext context) {
+    
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => Dashboard()),
+      (route) => false,
+    );
   }
 }

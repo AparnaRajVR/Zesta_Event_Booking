@@ -26,22 +26,28 @@ class EventCarousel extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyCarouselItem(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: Colors.grey.shade200,
-      ),
-      child: Center(
-        child: Text(
-          'No events available',
-          style: TextStyle(
-            color: Colors.grey.shade600,
-            fontSize: 16,
-          ),
+ Widget _buildEmptyCarouselItem(BuildContext context) {
+  return Container(
+    margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(16),
+      color: Colors.grey.shade200,
+    ),
+    child: Center(
+      child: Image.asset("asset/images/event_carousel.jpg",
+        
+        height: 300,
+        width: 290,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => Icon(
+          Icons.event,
+          size: 100,    
+          color: Colors.grey.shade600,
         ),
       ),
+    ),
     );
-  }
+  
+}
+
 }

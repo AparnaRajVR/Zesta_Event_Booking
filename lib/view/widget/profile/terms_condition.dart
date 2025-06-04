@@ -17,7 +17,7 @@ class TermsAndConditionsState extends State<TermsAndConditions> {
     return Scaffold(
       appBar: AppBar(
         // automaticallyImplyleading: true,
-        title: Text('Terms & Conditions')),
+        ),
       body: InAppWebView(
         initialUrlRequest: URLRequest(
           url: WebUri("https://www.freeprivacypolicy.com/live/f730e7b0-936b-4d1f-8b19-40dafa9ae124 "),

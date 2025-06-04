@@ -33,8 +33,8 @@ class CustomBottomNav extends StatelessWidget {
             selectedColor:AppColors.bottomNavSelectedIcon
           ),
           CrystalNavigationBarItem(
-            icon: IconlyBold.calendar,
-            unselectedIcon: IconlyLight.calendar,
+            icon: IconlyBold.search,
+            unselectedIcon: IconlyLight.search,
             selectedColor:AppColors.bottomNavSelectedIcon
           ),
           CrystalNavigationBarItem(

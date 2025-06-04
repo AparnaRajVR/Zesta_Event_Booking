@@ -1,48 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:z_organizer/providers/revenue_provider.dart';
-// import 'package:z_organizer/providers/ticket_provider.dart';
-
-// class RevenuePage extends ConsumerWidget {
-//   const RevenuePage({super.key});
-
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     final ticketsAsync = ref.watch(ticketsProvider);
-
-//     return Scaffold(
-//       appBar: AppBar(title: Text('Revenue Report')),
-//       body: ticketsAsync.when(
-//         data: (tickets) {
-//           final revenueData = calculateRevenue(tickets);
-
-//           if (revenueData.isEmpty) {
-//             return Center(child: Text('No tickets sold yet.'));
-//           }
-
-//           return ListView.builder(
-//             itemCount: revenueData.length,
-//             itemBuilder: (context, index) {
-//               final data = revenueData[index];
-//               return Card(
-//                 margin: EdgeInsets.all(8),
-//                 child: ListTile(
-//                   title: Text(data.eventName),
-//                   subtitle: Text(
-//                     'Tickets Sold: ${data.totalTicketsSold}\n'
-//                     'Total Revenue: ₹${data.totalRevenue.toStringAsFixed(2)}',
-//                   ),
-//                 ),
-//               );
-//             },
-//           );
-//         },
-//         loading: () => Center(child: CircularProgressIndicator()),
-//         error: (e, st) => Center(child: Text('Error: $e')),
-//       ),
-//     );
-//   }
-// }
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -61,19 +16,21 @@ class RevenuePage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text(
           'Revenue Report',
+         
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 24,
           ),
-        ),
+          
+        ),centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Color(0xFF667eea), Color(0xFF764ba2)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+              // begin: Alignment.topLeft,
+              // end: Alignment.bottomRight,
             ),
           ),
         ),

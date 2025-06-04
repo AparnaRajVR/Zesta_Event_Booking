@@ -1,166 +1,194 @@
-import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:z_organizer/providers/profle_edit_provider.dart';
 
-class OrganizerEditProfilePage extends StatefulWidget {
-  const OrganizerEditProfilePage({super.key});
-
-  @override
-  State<OrganizerEditProfilePage> createState() => _OrganizerEditProfilePageState();
-}
-
-class _OrganizerEditProfilePageState extends State<OrganizerEditProfilePage> {
-  final _formKey = GlobalKey<FormState>();
-  final _nameCtrl = TextEditingController();
-  final _bioCtrl = TextEditingController();
-  File? _pickedImage;
-  bool _isUploading = false;
+class OrganizerEditProfilePage extends ConsumerWidget {
+  const OrganizerEditProfilePage({Key? key}) : super(key: key);
 
   @override
-  void initState() {
-    super.initState();
-    final user = FirebaseAuth.instance.currentUser;
-    _nameCtrl.text = user?.displayName ?? '';
-    // You may want to load bio from Firestore or another source if you store it there
-    _bioCtrl.text = ''; // Set this to user's bio if available
-  }
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.watch(profileEditControllerProvider.notifier);
+    final state = ref.watch(profileEditControllerProvider);
 
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
-    if (picked != null) {
-      setState(() {
-        _pickedImage = File(picked.path);
-      });
-    }
-  }
+    // Use FutureBuilder to get initial profile data
+    return FutureBuilder<Map<String, dynamic>?>(
+      future: controller.getCurrentUserProfile(),
+      builder: (context, snapshot) {
+        // Loading state
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-  Future<void> _saveProfile() async {
-    if (!_formKey.currentState!.validate()) return;
-    setState(() => _isUploading = true);
+        // Error state
+        if (snapshot.hasError) {
+          return Scaffold(
+            body: Center(child: Text('Error: ${snapshot.error}')),
+          );
+        }
 
-    try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) throw Exception("No user found");
+        // Data loaded
+        final profileData = snapshot.data ?? {};
+        final displayNameController = TextEditingController(text: profileData['displayName'] ?? '');
+        final bioController = TextEditingController(text: profileData['bio'] ?? '');
 
-      String? photoUrl = user.photoURL;
-
-      // If a new image is picked, upload it to your storage and get the URL
-      if (_pickedImage != null) {
-        // TODO: Upload _pickedImage to Firebase Storage and get the download URL
-        // photoUrl = await uploadImageAndGetUrl(_pickedImage!);
-      }
-
-      await user.updateDisplayName(_nameCtrl.text.trim());
-      if (photoUrl != null) {
-        await user.updatePhotoURL(photoUrl);
-      }
-
-      // If you store bio elsewhere (e.g., Firestore), update it there as well
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile updated')),
-        );
-        Navigator.pop(context, true);
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Update failed: $e')),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isUploading = false);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Profile'),
-        backgroundColor: Colors.deepPurple.shade600,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              Center(
-                child: Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 60,
-                      backgroundColor: Colors.deepPurple.shade200,
-                      backgroundImage: _pickedImage != null
-                          ? FileImage(_pickedImage!)
-                          : (user?.photoURL != null
-                              ? NetworkImage(user!.photoURL!)
-                              : null) as ImageProvider?,
-                      child: _pickedImage == null && user?.photoURL == null
-                          ? Icon(Icons.person, size: 60, color: Colors.deepPurple.shade700)
-                          : null,
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: GestureDetector(
-                        onTap: _pickImage,
-                        child: Container(
-                          width: 36,
-                          height: 36,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.grey.shade300),
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Edit Profile'),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: ValueKey('edit_profile_form'), // Stateless, so use a ValueKey
+              child: ListView(
+                children: [
+                  GestureDetector(
+                    onTap: () => _showImagePickerOptions(context, ref),
+                    child: Center(
+                      child: Stack(
+                        children: [
+                          CircleAvatar(
+                            radius: 60,
+                            backgroundColor: Colors.deepPurple.shade100,
+                            backgroundImage: controller.pickedImage != null
+                                ? FileImage(controller.pickedImage!)
+                                : (controller.uploadedPhotoUrl != null
+                                    ? NetworkImage(controller.uploadedPhotoUrl!)
+                                    : null) as ImageProvider?,
+                            child: controller.pickedImage == null &&
+                                    controller.uploadedPhotoUrl == null
+                                ? const Icon(Icons.camera_alt, size: 40)
+                                : null,
                           ),
-                          child: const Icon(Icons.camera_alt, color: Colors.blue, size: 22),
-                        ),
+                          if (controller.pickedImage != null || controller.uploadedPhotoUrl != null)
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: IconButton(
+                                icon: const Icon(Icons.delete, color: Colors.red),
+                                onPressed: () {
+                                  controller.removeImage();
+                                  // No setState needed, Riverpod will rebuild
+                                },
+                              ),
+                            ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-              TextFormField(
-                controller: _nameCtrl,
-                decoration: const InputDecoration(labelText: "Full Name"),
-                validator: (v) => v == null || v.trim().isEmpty ? "Enter name" : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _bioCtrl,
-                decoration: const InputDecoration(labelText: "Bio"),
-                maxLines: 2,
-              ),
-              const SizedBox(height: 32),
-              _isUploading
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton.icon(
-                      icon: const Icon(Icons.save),
-                      label: const Text("Save"),
+                  ),
+                  const SizedBox(height: 24),
+                  TextFormField(
+                    controller: displayNameController,
+                    decoration: InputDecoration(
+                      labelText: 'Display Name',
+                      prefixIcon: const Icon(Icons.person),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a display name';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: bioController,
+                    decoration: InputDecoration(
+                      labelText: 'Bio',
+                      prefixIcon: const Icon(Icons.info),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      alignLabelWithHint: true,
+                    ),
+                    maxLines: 4,
+                    maxLength: 150,
+                  ),
+                  const SizedBox(height: 24),
+                  state.when(
+                    loading: () => const Center(child: CircularProgressIndicator()),
+                    error: (error, stack) => Text(
+                      'Error: ${error.toString()}',
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                    data: (_) => ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple.shade600,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      onPressed: _saveProfile,
+                      onPressed: () => _saveProfile(
+                        context,
+                        controller,
+                        displayNameController.text,
+                        bioController.text,
+                      ),
+                      child: const Text('Save Changes'),
                     ),
-            ],
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
+        );
+      },
+    );
+  }
+
+  void _showImagePickerOptions(BuildContext context, WidgetRef ref) {
+    final controller = ref.read(profileEditControllerProvider.notifier);
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.photo_library),
+            title: const Text('Choose from Gallery'),
+            onTap: () async {
+              Navigator.pop(context);
+              await controller.pickImage();
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.camera_alt),
+            title: const Text('Take a Photo'),
+            onTap: () async {
+              Navigator.pop(context);
+              await controller.pickImageFromCamera();
+            },
+          ),
+        ],
       ),
     );
+  }
+
+  Future<void> _saveProfile(
+    BuildContext context,
+    ProfileEditController controller,
+    String displayName,
+    String bio,
+  ) async {
+    try {
+      String? photoUrl;
+      if (controller.pickedImage != null) {
+        photoUrl = await controller.uploadToCloudinary(controller.pickedImage!);
+      }
+      await controller.updateProfile(
+        displayName: displayName,
+        bio: bio,
+        photoUrl: photoUrl,
+      );
+      if (context.mounted) Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error saving profile: ${e.toString()}')),
+      );
+    }
   }
 }

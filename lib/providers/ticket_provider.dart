@@ -12,3 +12,13 @@ final ticketsProvider = StreamProvider<List<Ticket>>((ref) {
       .map((snapshot) =>
           snapshot.docs.map((doc) => Ticket.fromMap(doc.data())).toList());
 });
+// event_providers.dart or ticket_service.dart
+
+
+final eventTicketCountProvider = StreamProvider.family<int, String>((ref, eventId) {
+  return FirebaseFirestore.instance
+      .collection('events')
+      .doc(eventId)
+      .snapshots()
+      .map((snapshot) => snapshot.data()?['totalTickets'] ?? 0);
+});

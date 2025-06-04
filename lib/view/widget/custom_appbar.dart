@@ -4,7 +4,7 @@ import 'package:z_organizer/constant/color.dart';
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
 
-  const CustomAppBar({Key? key, required this.title}) : super(key: key);
+  const CustomAppBar({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +24,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor:AppColors.appbar,
       elevation: 4,
       actions: [
-        IconButton(icon: const Icon(Icons.notifications,color:AppColors.lightText), onPressed: () {}),
-        IconButton(icon: const Icon(Icons.settings,color:AppColors.lightText), onPressed: () {}),
+        // IconButton(icon: const Icon(Icons.notifications,color:AppColors.lightText), onPressed: () {}),
+        // IconButton(icon: const Icon(Icons.settings,color:AppColors.lightText), onPressed: () {}),
       ],
     );
   }

@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:z_organizer/view/screen/main_screens/add_event_page.dart';
 import 'package:z_organizer/view/screen/main_screens/home_screen.dart';
 import 'package:z_organizer/view/screen/main_screens/profile_page.dart';
+import 'package:z_organizer/view/screen/main_screens/revenue_page.dart';
 import 'package:z_organizer/view/screen/main_screens/search_page.dart';
-import 'package:z_organizer/view/screen/revenue_page.dart';
 import 'package:z_organizer/view/widget/custom_appbar.dart';
 import 'package:z_organizer/view/widget/custom_bottom_nav.dart';
 
@@ -37,7 +37,7 @@ Widget build(BuildContext context, WidgetRef ref) {
 
   const pages = [
     HomeScreen(),
-    SearchPage(),
+    EventSearchPage(),
     SizedBox(),
     RevenuePage(),
     UserProfileScreen(),
@@ -47,7 +47,7 @@ Widget build(BuildContext context, WidgetRef ref) {
     // Show CustomAppBar only on HomeScreen (index 0)
     appBar: selectedTabIndex == 0
         ? CustomAppBar(
-            title: 'Zesta',
+            title: 'Zesta', centerTitle: true,
           )
         : null,
     body: Padding(

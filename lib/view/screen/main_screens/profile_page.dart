@@ -9,7 +9,7 @@ import 'package:z_organizer/view/widget/profile/about_us.dart';
 import 'package:z_organizer/view/widget/profile/privacy_policy.dart';
 import 'package:z_organizer/view/widget/profile/terms_condition.dart';
 
-// Provider for current user
+
 final currentUserProvider = StreamProvider<User?>((ref) {
   return FirebaseAuth.instance.authStateChanges();
 });
@@ -80,7 +80,7 @@ class UserProfileScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: const Text('Profile',style: TextStyle(fontWeight: FontWeight.bold),),
         backgroundColor: Colors.deepPurple.shade600,
         foregroundColor: Colors.white,
         elevation: 0,

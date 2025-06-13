@@ -9,9 +9,9 @@ class LogoWidget extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         child: Image.asset(
-          'asset/images/logo.png',
-          height: 100,
-          width: 100,
+          'asset/images/logo1.png',
+          height: 280,
+          width: 280,
         ),
       ),
     );

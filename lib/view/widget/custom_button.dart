@@ -10,12 +10,12 @@ class CustomButton extends StatelessWidget {
   
 
   const CustomButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.onPressed,
     this.color,
     this.textStyle,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class CustomButton extends StatelessWidget {
       onPressed: onPressed,
       child: Text(
         text,
-        style: textStyle ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.lightText),
+        style: textStyle ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textlight),
       ),
     );
   }

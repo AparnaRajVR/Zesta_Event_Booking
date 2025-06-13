@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:z_organizer/constant/color.dart';
 import 'package:z_organizer/view/widget/custom_feild.dart';
 
 
@@ -13,7 +14,7 @@ class EmailField extends StatelessWidget {
       controller: controller,
       label: 'Email',
       hint: 'name@example.com',
-      prefixIcon: const Icon(Icons.email_outlined, color: Colors.purple),
+      prefixIcon: const Icon(Icons.email_outlined, color: AppColors.primary),
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Email is required';
@@ -38,7 +39,7 @@ class PasswordField extends StatelessWidget {
       label: 'Password',
       hint: 'Enter your password',
       isPassword: true,
-      prefixIcon: const Icon(Icons.lock_outline, color: Colors.purple),
+      prefixIcon: const Icon(Icons.lock_outline, color: AppColors.primary),
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Password is required';

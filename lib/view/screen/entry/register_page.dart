@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:z_organizer/constant/color.dart';
@@ -15,13 +16,14 @@ class RegisterScreen extends ConsumerWidget {
     final authRepository = ref.watch(authServiceProvider);
     
     return Scaffold(
-      appBar: CustomAppBar(title: 'Register Account'),
+      appBar: CustomAppBar(title: 'Register Account', centerTitle: true,),
+      
       body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [AppColors.primary,AppColors.lightText],
+            colors: [AppColors.primary,AppColors.textlight],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),

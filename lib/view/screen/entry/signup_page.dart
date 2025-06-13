@@ -38,8 +38,8 @@ class SignupPageState extends ConsumerState<SignupPage> {
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [AppColors.lightText,
-                 Colors.purple],
+                colors: [AppColors.textlight,
+                 AppColors.primary],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -60,7 +60,7 @@ class SignupPageState extends ConsumerState<SignupPage> {
                         color: const Color.fromARGB(255, 252, 249, 249).withOpacity(0.2),
                         borderRadius: BorderRadius.circular(24),
                         border: Border.all(
-                          color: AppColors.lightText
+                          color: AppColors.textlight
                           .withOpacity(0.3),
                         ),
                       ),
@@ -108,7 +108,7 @@ class SignupPageState extends ConsumerState<SignupPage> {
           controller: nameController,
           label: 'Full Name',
           hint: 'Enter your full name',
-          prefixIcon: const Icon(Icons.person_outline, color: AppColors.lightText,
+          prefixIcon: const Icon(Icons.person_outline, color: AppColors.textlight,
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -122,7 +122,7 @@ class SignupPageState extends ConsumerState<SignupPage> {
           controller: emailController,
           label: 'Email Address',
           hint: 'name@example.com',
-          prefixIcon: const Icon(Icons.email_outlined, color: AppColors.lightText,
+          prefixIcon: const Icon(Icons.email_outlined, color: AppColors.textlight,
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -137,7 +137,7 @@ class SignupPageState extends ConsumerState<SignupPage> {
           label: 'Password',
           hint: 'Create a password',
           isPassword: true,
-          prefixIcon: const Icon(Icons.lock_outline, color: AppColors.lightText,
+          prefixIcon: const Icon(Icons.lock_outline, color: AppColors.textlight,
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -155,7 +155,7 @@ class SignupPageState extends ConsumerState<SignupPage> {
           label: 'Confirm Password',
           hint: 'Re-enter your password',
           isPassword: true,
-          prefixIcon: const Icon(Icons.lock_outline, color: AppColors.lightText,
+          prefixIcon: const Icon(Icons.lock_outline, color: AppColors.textlight,
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -202,7 +202,7 @@ class SignupPageState extends ConsumerState<SignupPage> {
           }
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color.fromARGB(255, 107, 70, 193),
+          backgroundColor: AppColors.textlight,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -211,9 +211,9 @@ class SignupPageState extends ConsumerState<SignupPage> {
         child: const Text(
           'Create Account',
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 16.5,
             fontWeight: FontWeight.w600,
-            color: AppColors.lightText,
+            color: Color.fromARGB(160, 0, 0, 0),
             
           ),
         ),

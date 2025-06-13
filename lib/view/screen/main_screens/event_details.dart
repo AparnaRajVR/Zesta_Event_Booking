@@ -19,7 +19,7 @@ class EventDetailsPage extends StatelessWidget {
           SliverAppBar(
             expandedHeight: 300,
             pinned: true,
-            backgroundColor: AppColors.appbar,
+            backgroundColor: AppColors.primary,
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
                 fit: StackFit.expand,
@@ -157,13 +157,13 @@ Navigator.pushReplacement(context, MaterialPageRoute(builder:   (context) => Edi
                           Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: AppColors.appbar.withOpacity(0.1),
+                              color: AppColors.primary.withOpacity(0.1),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
                               Icons.calendar_today,
                               size: 22,
-                              color: AppColors.appbar,
+                              color: AppColors.primary,
                             ),
                           ),
                           const SizedBox(width: 14),
@@ -218,13 +218,13 @@ Navigator.pushReplacement(context, MaterialPageRoute(builder:   (context) => Edi
                           Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: AppColors.appbar.withOpacity(0.1),
+                              color: AppColors.primary.withOpacity(0.1),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
                               Icons.location_on,
                               size: 22,
-                              color: AppColors.appbar,
+                              color: AppColors.primary,
                             ),
                           ),
                           const SizedBox(width: 14),
@@ -277,14 +277,14 @@ Navigator.pushReplacement(context, MaterialPageRoute(builder:   (context) => Edi
                         width: 50,
                         height: 50,
                         decoration: BoxDecoration(
-                          color: AppColors.appbar.withOpacity(0.2),
+                          color: AppColors.primary.withOpacity(0.2),
                           shape: BoxShape.circle,
                         ),
                         child: Center(
                           child: Icon(
                             Icons.person,
                             size: 30,
-                            color: AppColors.appbar,
+                            color: AppColors.primary,
                           ),
                         ),
                       ),
@@ -376,7 +376,7 @@ Navigator.pushReplacement(context, MaterialPageRoute(builder:   (context) => Edi
       //       // Booking action
       //     },
       //     style: ElevatedButton.styleFrom(
-      //       backgroundColor: AppColors.appbar,
+      //       backgroundColor: AppColors.primary,
       //       foregroundColor: Colors.white,
       //       shape: RoundedRectangleBorder(
       //         borderRadius: BorderRadius.circular(12),

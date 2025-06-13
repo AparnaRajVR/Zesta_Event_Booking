@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:z_organizer/constant/color.dart';
 import 'package:z_organizer/view/screen/entry/register_page.dart';
-import '../../../../VIewmodel/login_viewmodel.dart';
+import 'package:z_organizer/view/screen/main_screens/dashboard_page.dart';
+import 'package:z_organizer/viewmodel/login_viewmodel.dart';
+
 
 class SignInButton extends StatelessWidget {
   final TextEditingController emailController;
@@ -23,26 +26,36 @@ class SignInButton extends StatelessWidget {
       height: 56,
       child: ElevatedButton(
         onPressed: () async {
-          if (formKey.currentState?.validate() == true) {
-            final result = await loginViewModel.signIn(
-              email: emailController.text.trim(),
-              password: passwordController.text.trim(),
-            );
+  if (formKey.currentState?.validate() == true) {
+    final result = await loginViewModel.signIn(
+      email: emailController.text.trim(),
+      password: passwordController.text.trim(),
+    );
 
-            if (result == "Login successful") {
-             Navigator.of(context).pushReplacement(
-  MaterialPageRoute(builder: (context) => RegisterScreen()),
-);
+    if (result == "Login successful") {
+      final status = await loginViewModel.getUserStatus();
 
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(result)),
-              );
-            }
-          }
-        },
+      if (status == "approved") {
+        // User is already registered and approved, go to Dashboard
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => Dashboard()),
+        );
+      } else {
+        // Not registered or not approved, go to RegisterScreen
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => RegisterScreen()),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result)),
+      );
+    }
+  }
+},
+
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.purple,
+          backgroundColor: AppColors.primary,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -53,7 +66,7 @@ class SignInButton extends StatelessWidget {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Colors.white,
+            color: AppColors.textlight,
           ),
         ),
       ),

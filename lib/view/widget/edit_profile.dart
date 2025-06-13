@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:z_organizer/providers/profle_edit_provider.dart';
 
 class OrganizerEditProfilePage extends ConsumerWidget {
-  const OrganizerEditProfilePage({Key? key}) : super(key: key);
+  const OrganizerEditProfilePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

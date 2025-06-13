@@ -14,6 +14,7 @@ final endTimeProvider = StateProvider<DateTime?>((ref) => null);
 final selectedCategoryIdProvider = StateProvider<String?>((ref) => null);
 final selectedAgeLimitProvider = StateProvider<String?>((ref) => null);
 final selectedLanguagesProvider = StateProvider<List<String>>((ref) => []);
+final existingImagesProvider = StateProvider<List<String>>((ref) => []);
 
 final categoryServiceProvider = Provider((ref) => CategoryService());
 

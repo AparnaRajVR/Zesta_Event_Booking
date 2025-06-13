@@ -51,7 +51,7 @@ class SuccessPage extends ConsumerWidget {
             title: Text(
               'Registration Successful',
               style: TextStyle(
-                color: AppColors.lightText,
+                color: AppColors.textlight,
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
@@ -65,12 +65,12 @@ class SuccessPage extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Icon(Icons.check_circle_outline, size: 120, color: AppColors.lightText,),
+                  Icon(Icons.check_circle_outline, size: 120, color: AppColors.textlight,),
                   const SizedBox(height: 30),
                   Text(
                     'Your registration was successful!',
                     style: TextStyle(
-                      color: AppColors.lightText,
+                      color: AppColors.textlight,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
@@ -81,7 +81,7 @@ class SuccessPage extends ConsumerWidget {
                     'Please note, your account is pending verification. '
                     'Once verified by the admin, you will gain access to the home page.',
                     style: TextStyle(
-                      color: AppColors.lightText,
+                      color: AppColors.textlight,
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
                     ),

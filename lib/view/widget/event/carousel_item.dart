@@ -5,7 +5,7 @@ import 'package:z_organizer/model/event_model.dart';
 class CarouselItem extends StatelessWidget {
   final EventModel event;
 
-  const CarouselItem({Key? key, required this.event}) : super(key: key);
+  const CarouselItem({super.key, required this.event});
 
   @override
   Widget build(BuildContext context) {

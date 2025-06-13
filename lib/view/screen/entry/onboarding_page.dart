@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:z_organizer/constant/color.dart';
 import 'package:z_organizer/view/screen/entry/login_screen.dart';
 
 import '../../../VIewmodel/onbaording_viewmodel.dart';
@@ -37,22 +38,22 @@ class OnboardingScreen extends StatelessWidget {
         showSkipButton: true,
         skip: const Text(
           "Skip",
-          style: TextStyle(color: Colors.purpleAccent),
+          style: TextStyle(color: AppColors.primary),
         ),
-        next: const Icon(Icons.arrow_forward, color: Colors.purpleAccent),
+        next: const Icon(Icons.arrow_forward, color: AppColors.primary),
         done: const Text(
           "Done",
-          style: TextStyle(fontWeight: FontWeight.w600, color: Colors.purpleAccent),
+          style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.primary),
         ),
         dotsDecorator: DotsDecorator(
-          activeColor: Colors.purpleAccent,
+          activeColor: AppColors.primary,
           size: const Size(10.0, 10.0),
           activeSize: const Size(22.0, 10.0),
           activeShape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(25.0),
           ),
         ),
-        globalBackgroundColor: Colors.white,
+        globalBackgroundColor: AppColors.textlight,
       ),
     );
   }
@@ -62,13 +63,13 @@ class OnboardingScreen extends StatelessWidget {
       titleTextStyle: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.bold,
-        color: Colors.white,
+        color: AppColors.primary,
       ),
       bodyTextStyle: TextStyle(
         fontSize: 16,
-        color: Colors.white70,
+        color: AppColors.textdark,
       ),
-      pageColor: Colors.black,
+      pageColor: AppColors.textlight,
       imagePadding: EdgeInsets.all(40),
     );
   }

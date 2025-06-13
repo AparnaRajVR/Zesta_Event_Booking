@@ -34,7 +34,7 @@ class _AnimatedSplashLogoState extends State<AnimatedSplashLogo> {
       child: AnimatedScale(
         scale: _scale,
         duration: Duration(seconds: 1),
-        child: Image.asset('asset/images/logo.png'),
+        child: Image.asset('asset/images/logo1.png'),
       ),
     );
   }

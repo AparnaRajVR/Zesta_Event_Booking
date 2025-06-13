@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
 import 'package:z_organizer/constant/color.dart';
 
-enum SelectedTab { home, favorite, add, search, user }
+enum SelectedTab { home, search, add, ticket, user }
 
 class CustomBottomNav extends StatelessWidget {
   final SelectedTab selectedTab;

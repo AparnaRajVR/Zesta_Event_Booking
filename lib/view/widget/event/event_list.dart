@@ -33,7 +33,7 @@ class EventList extends ConsumerWidget {
                     if (event.id != null) {
                       showDialog(
                         context: context,
-                        builder: (context) => DeleteEventDialog(eventId: event.id!),
+                        builder: (context) => DeleteEventDialog(eventId: event.id),
                       );
                     }
                   },

@@ -58,7 +58,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
             //  border: Border.all(color: Colors.white),
              borderRadius: BorderRadius.circular(8.0),
             color:
-            Color.fromARGB(255, 227, 204, 231),
+            Colors.white.withOpacity(0.2),
            
             
           ),
@@ -79,8 +79,9 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
                     Icon(Icons.add_photo_alternate, size: 40, color: Colors.grey[600]),
                     const SizedBox(height: 8),
                     Text(
-                      'Tap to choose an image',
-                      style: TextStyle(color: Colors.grey[600]),
+                      'Tap to choose an Document',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: const Color.fromARGB(255, 82, 81, 81)),
                     ),
                   ],
                 ),

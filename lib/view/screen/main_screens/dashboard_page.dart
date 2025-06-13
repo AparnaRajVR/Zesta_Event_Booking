@@ -56,16 +56,16 @@ Widget build(BuildContext context, WidgetRef ref) {
         children: [
           // Show search only on HomeScreen (index 0)
           if (selectedTabIndex == 0)
-            TextField(
-              decoration: InputDecoration(
-                hintText: 'Search events...',
-                hintStyle: TextStyle(color: Colors.grey.shade600),
-                prefixIcon: Icon(Icons.search, color: Colors.deepPurple.shade700),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-              ),
-              onSubmitted: (value) => _showSnackBar(context, 'Searching for: $value'),
-            ),
+            // TextField(
+            //   decoration: InputDecoration(
+            //     hintText: 'Search events...',
+            //     hintStyle: TextStyle(color: Colors.grey.shade600),
+            //     prefixIcon: Icon(Icons.search, color: Colors.deepPurple.shade700),
+            //     border: InputBorder.none,
+            //     contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            //   ),
+            //   onSubmitted: (value) => _showSnackBar(context, 'Searching for: $value'),
+            // ),
           Expanded(child: pages[selectedTabIndex]),
         ],
       ),
